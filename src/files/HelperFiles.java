@@ -5,7 +5,6 @@
  */
 package files;
 
-import com.sun.glass.ui.Size;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -13,10 +12,13 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.sql.Time;
+import java.sql.Array;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -25,7 +27,7 @@ import java.util.List;
 public class HelperFiles {
     
     
-    public static String readFile(String path) throws FileNotFoundException, IOException{
+    public static String readFile(String path) throws FileNotFoundException, IOException {
         FileReader f = new FileReader(path);
         BufferedReader b = new BufferedReader(f);
         String cadena = "";
@@ -148,6 +150,66 @@ public class HelperFiles {
             return strResult;
         }
         return sizeConverter(size, ++elevation);
+    }
+    
+    public static void replicateFiles(String path, int quantity) throws FileNotFoundException, Exception {
+        if (path == null || path.equals("")) {
+            throw new IllegalArgumentException("Path is null or Empty");
+        }
+        File directory = new File(path);
+        if (!directory.exists()) {
+            throw new FileNotFoundException("File path not exist");
+        }
+        if (!directory.isDirectory()) {
+            throw new Exception("The path especified not is a directory");
+        }
+        replicateFiles(directory, quantity);
+    }
+    
+    public static void replicateFiles(File directory, int quantity) throws IOException {
+        File[] files = directory.listFiles();
+        int size = 0;
+        for (File f : files) {
+            if (f.isFile()) {
+                size++;
+            }
+        }
+        quantity = quantity - size;
+        if (size > quantity) {
+            return;
+        }
+        int mod = quantity%size;
+        int div = quantity/size;
+        for (int i = 0;i < files.length; i++) {
+            File f = files[i];
+            if (f.isFile()) {
+                String path = f.getAbsolutePath();
+                String[] split = path.split("\\.");
+                String ext = "";
+                if (split.length > 1) {
+                    ext = "."+split[1];
+                }
+                String nameWithoutExt = path.substring(0, path.indexOf(ext));
+                int j = 1;
+                for (; j <= div ; j++) {
+                    String newName = nameWithoutExt + "_" + j + ext;
+                    System.out.println(newName);
+                    new File(newName).createNewFile();
+                }
+                if (i < mod) {
+                    String newName = nameWithoutExt + "_" + j + ext;
+                    new File(newName).createNewFile();
+                }
+            }
+        }
+    }
+    
+    public static void main(String[] args) {
+        try {
+            HelperFiles.replicateFiles("D:\\por_firmar", 200);
+        } catch (Exception ex) {
+            Logger.getLogger(HelperFiles.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
     
             

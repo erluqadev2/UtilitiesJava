@@ -44,7 +44,7 @@ public class Utilities {
 //        }
 
 
-        String path = "D:\\Ericson\\game\\bootstrap";
+        String path = "D:\\others";
         try {
             long size = HelperFiles.sizeFile(path);
             System.out.println(HelperFiles.sizeFileToString(size));
