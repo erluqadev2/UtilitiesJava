@@ -258,8 +258,11 @@ public class HelperFiles {
                     String abrDpto = "";
                     String[] split = array[0].split("\\s");
                     String nombreDpto = "";
-                    if (split.length == 2) {
-                         nombreDpto = split[1];
+                    if (split.length > 1) {
+                        for (int i = 1; i < split.length; i++) {
+                            nombreDpto += split[i] + " ";
+                        }
+                         nombreDpto = nombreDpto.trim();
                     }
                     ubigeoDpto = ubigeo;
                     String insertDpto = "INSERT INTO departamento(dep_codubigeo, dep_abreviatura, dep_nombre)"
@@ -273,10 +276,12 @@ public class HelperFiles {
                     listScript.add(comment);
                     String nomPrv = "";
                     String split[] = provincia.split("\\s");
-                    if (split.length == 2) {
-                        nomPrv = split[1];
+                    if (split.length > 1) {
+                        for (int i = 1; i < split.length; i++) {
+                            nomPrv += split[i] + " ";
+                        }
+                        nomPrv = nomPrv.trim();
                     }
-                    String codDpto = ubigeo.substring(0,2);
                     ubigeoPrv = ubigeo;
                     String insertPrv = "INSERT INTO provincia(pro_codubigeo, pro_nombre, dep_codubigeo)"
                             + " VALUES('" + ubigeo + "', '" + nomPrv + "', '" + ubigeoDpto + "');";
@@ -289,11 +294,12 @@ public class HelperFiles {
                     listScript.add(comment);
                     String nomDtr = "";
                     String[] split = distrito.split("\\s");
-                    if (split.length == 2) {
-                        nomDtr = split[1];
+                    if (split.length > 1) {
+                        for (int i = 1; i < split.length; i++) {
+                            nomDtr += split[i] + " ";
+                        }
+                        nomDtr = nomDtr.trim();
                     }
-                    String codPrv = ubigeo.substring(2,4);
-                    String codDpto = ubigeo.substring(0,2);
                     String insertDtr = "INSERT INTO distrito(dis_codubigeo, dis_nombre, pro_codubigeo)"
                             + " VALUES('" + ubigeo + "', '" + nomDtr + "', '" + ubigeoPrv + "');";
                     listScript.add(insertDtr);
