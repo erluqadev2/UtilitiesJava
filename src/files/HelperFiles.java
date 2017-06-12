@@ -204,11 +204,106 @@ public class HelperFiles {
         }
     }
     
+    public static List<String[]> readCSV(String path, String separator, boolean withHeader) throws Exception {
+            try {
+                List<String[]> lista = new ArrayList<>();
+                List<String> listRows = readFileInList(path);
+                if (listRows == null || listRows.isEmpty()) {
+                    throw new Exception("No se encontraron datos en el archivo pasado");
+                }
+                for (int i = (withHeader ? 1 : 0); i < listRows.size(); i++) {
+                    String row = listRows.get(i);
+                    String[] split = row.split("\\;");
+                    lista.add(split);
+                }
+                return lista;
+            } catch (Exception e) {
+                throw e;
+            }
+    }
+    
     public static void main(String[] args) {
+        //        try {
+//            HelperFiles.replicateFiles("D:\\por_firmar", 200);
+//        } catch (Exception ex) {
+//            Logger.getLogger(HelperFiles.class.getName()).log(Level.SEVERE, null, ex);
+//        }
+
+//        try {
+//            HelperFiles.readFile("C:\\Users\\PERTISAN\\Desktop\\escuadron\\ubigeo_peru.csv");
+//        } catch (IOException ex) {
+//            Logger.getLogger(HelperFiles.class.getName()).log(Level.SEVERE, null, ex);
+//        }
+
         try {
-            HelperFiles.replicateFiles("D:\\por_firmar", 200);
-        } catch (Exception ex) {
-            Logger.getLogger(HelperFiles.class.getName()).log(Level.SEVERE, null, ex);
+            List<String[]> list = HelperFiles.readCSV("C:\\Users\\PERTISAN\\Desktop\\escuadron\\ubigeo_peru.csv", ";", true);
+            List<String> listScript = new ArrayList<>();
+            String comment = "-- #### SCRIPT DE INSERCION DE UBIGEO(DEPARTAMENTOS, PROVINCIA Y DISTRITOS) DEL PERÚ ####";
+            listScript.add(comment);
+            String ubigeoDpto = "";
+            String ubigeoPrv = "";
+            for (String[] array : list) {
+                String departamento = array[0].trim();
+                String provincia = array[1].trim();
+                String distrito = array[2].trim();
+                String ubigeo = array[3].trim();
+                if (provincia.equals("") && distrito.equals("")) {
+                    listScript.add("");
+                    listScript.add("");
+                    listScript.add("-- ==============================");
+                    comment = "-- #### INSERT DEPARTAMENTO ####";
+                    System.out.println(comment);
+                    listScript.add(comment);
+                    listScript.add("-- ==============================");
+                    String abrDpto = "";
+                    String[] split = array[0].split("\\s");
+                    String nombreDpto = "";
+                    if (split.length == 2) {
+                         nombreDpto = split[1];
+                    }
+                    ubigeoDpto = ubigeo;
+                    String insertDpto = "INSERT INTO departamento(dep_codubigeo, dep_abreviatura, dep_nombre)"
+                            + " VALUES('" + ubigeo + "', '" + abrDpto + "', '" + nombreDpto + "');";
+                    listScript.add(insertDpto);
+                    System.out.println(insertDpto);
+                } else if (!provincia.equals("") && distrito.equals("")) {
+                    listScript.add("");
+                    comment = "-- #### INSERT PROVINCIA ####";
+                    System.out.println(comment);
+                    listScript.add(comment);
+                    String nomPrv = "";
+                    String split[] = provincia.split("\\s");
+                    if (split.length == 2) {
+                        nomPrv = split[1];
+                    }
+                    String codDpto = ubigeo.substring(0,2);
+                    ubigeoPrv = ubigeo;
+                    String insertPrv = "INSERT INTO provincia(pro_codubigeo, pro_nombre, dep_codubigeo)"
+                            + " VALUES('" + ubigeo + "', '" + nomPrv + "', '" + ubigeoDpto + "');";
+                    listScript.add(insertPrv);
+                    listScript.add("");
+                    System.out.println(insertPrv);
+                } else if (!distrito.equals("")) {
+                    comment = "-- #### INSERT DISTRITO ####";
+                    System.out.println(comment);
+                    listScript.add(comment);
+                    String nomDtr = "";
+                    String[] split = distrito.split("\\s");
+                    if (split.length == 2) {
+                        nomDtr = split[1];
+                    }
+                    String codPrv = ubigeo.substring(2,4);
+                    String codDpto = ubigeo.substring(0,2);
+                    String insertDtr = "INSERT INTO distrito(dis_codubigeo, dis_nombre, pro_codubigeo)"
+                            + " VALUES('" + ubigeo + "', '" + nomDtr + "', '" + ubigeoPrv + "');";
+                    listScript.add(insertDtr);
+                    System.out.println(insertDtr);
+                }
+            }
+            String pathScript = "C:\\Users\\PERTISAN\\Desktop\\escuadron\\implementacion\\backend\\BD_PNP\\inserts\\insert_ubigeo.sql";
+            HelperFiles.writeListInFile(listScript, pathScript);
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
         }
     }
     
