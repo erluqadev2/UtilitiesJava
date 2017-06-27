@@ -7,11 +7,16 @@ package files;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.sql.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -194,7 +199,10 @@ public class HelperFiles {
                 for (; j <= div ; j++) {
                     String newName = nameWithoutExt + "_" + j + ext;
                     System.out.println(newName);
-                    new File(newName).createNewFile();
+                    File newFile = new File(newName);
+                    if (newFile.createNewFile()) {
+                        Files.copy(Paths.get(path), new FileOutputStream(newFile));
+                    }
                 }
                 if (i < mod) {
                     String newName = nameWithoutExt + "_" + j + ext;
@@ -223,18 +231,6 @@ public class HelperFiles {
     }
     
     public static void main(String[] args) {
-        //        try {
-//            HelperFiles.replicateFiles("D:\\por_firmar", 200);
-//        } catch (Exception ex) {
-//            Logger.getLogger(HelperFiles.class.getName()).log(Level.SEVERE, null, ex);
-//        }
-
-//        try {
-//            HelperFiles.readFile("C:\\Users\\PERTISAN\\Desktop\\escuadron\\ubigeo_peru.csv");
-//        } catch (IOException ex) {
-//            Logger.getLogger(HelperFiles.class.getName()).log(Level.SEVERE, null, ex);
-//        }
-
         try {
             List<String[]> list = HelperFiles.readCSV("C:\\Users\\PERTISAN\\Desktop\\escuadron\\ubigeo_peru.csv", ";", true);
             List<String> listScript = new ArrayList<>();
